@@ -1,12 +1,23 @@
-<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="my blog"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>MVC数据传递 - Gzh Blog</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a href="https://github.com/forestGzh"><span>Github</span></a></li><li><a href="https://weibo.com/u/3832054570?refer_flag=1001030101_&amp;is_all=1"><span>Weibo</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">MVC数据传递</h1><ul class="meta"><li><i class="icon icon-author"></i>Gzh</li><li><i class="icon icon-clock"></i>1 Minutes</li><li><i class="icon icon-calendar"></i>2018年3月22日</li></ul></div></div><div class="article-content" style="max-width:900px"><h1 id="Action与View之间的数据传递"><a href="#Action与View之间的数据传递" class="headerlink" title="Action与View之间的数据传递"></a>Action与View之间的数据传递</h1><ul>
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="my blog"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>MVC数据传递 - Gzh Blog</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a href="https://github.com/forestGzh"><span>Github</span></a></li><li><a href="https://weibo.com/u/3832054570?refer_flag=1001030101_&amp;is_all=1"><span>Weibo</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">MVC数据传递</h1><ul class="meta"><li><i class="icon icon-author"></i>Gzh</li><li><i class="icon icon-clock"></i>2 Minutes</li><li><i class="icon icon-calendar"></i>2018年3月22日</li></ul></div></div><div class="article-content" style="max-width:900px"><h1 id="Action与View之间的数据传递"><a href="#Action与View之间的数据传递" class="headerlink" title="Action与View之间的数据传递"></a>Action与View之间的数据传递</h1><ul>
 <li>弱类型 ViewDate[“”]</li>
 <li>动态型 ViewBag</li>
-<li>强类型 Model</li>
+<li>强类型 Model  </li>
 <li>临时存储 TempDate[“”]</li>
 <li>后台：return View（date）；//ViewDate.Model</li>
 <li>前台：Model //WebViewPage.Model </li>
 </ul>
 <p>TempDate、ViewDate和ViewBag的区别：<br>ViewDate是object型的，以键值对形式存储，使用的时候需要手动进行强制类型转换；ViewBag是dynamic(动态)型的，使用的时候会自动根据数据类型转换。<br>ViewDate和ViewBag的生命周期和View一样，只对当前View有效；TempDate可以在不同的Action中进行传值，类似与Session，但是TempDate的值取过一次之后会自动删除。TempDate可以用在一次请求中同时执行的多个Action方法之间共享数据。</p>
+<p>ViewData和ViewBag 是Contoller与View之间值传递的内容，但是在实际使用的过程中，它们并不是最佳选择。</p>
+<p>ViewData和ViewBag引起的所有问题根源都在于数据类型。参数值的数据类型是被封装在ViewData中的，称为对象。<br>如果能够设置Controller和View之间参数传递的数据类型，那么上述问题就会得到解决，因此从得出强类型View。</p>
+<h2 id="强类型"><a href="#强类型" class="headerlink" title="强类型"></a>强类型</h2><ul>
+<li>创建View的强类型</li>
+</ul>
+<p>在View的顶部添加以下代码：</p>
+<p>@model WebApplication1.Models.Employee</p>
+<ul>
+<li>显示数据</li>
+</ul>
+<p>在View内部输入@Model.就会查看到Model类的属性</p>
 <h1 id="Action方法参数与返回值"><a href="#Action方法参数与返回值" class="headerlink" title="Action方法参数与返回值"></a>Action方法参数与返回值</h1><p>Action方法可以接收浏览器传过来的参数，有get和post方式，[HttpGet]和[HttpPost]特性可以使Action方法只接受GET或POST方式的请求。<br>Action方法可以重载，Action还可以根据路由规则传递数据（URL后面以？加参数的方式）。</p>
 <h2 id="Action接收参数形式"><a href="#Action接收参数形式" class="headerlink" title="Action接收参数形式"></a>Action接收参数形式</h2><ul>
 <li>通过Request.Form[“name”]获取表单数据。</li>
