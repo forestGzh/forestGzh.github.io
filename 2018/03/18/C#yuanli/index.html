@@ -1,0 +1,18 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="my blog"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>C# Windows程序相关 - Gzh Blog</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a href="https://github.com/forestGzh"><span>Github</span></a></li><li><a href="https://weibo.com/u/3832054570?refer_flag=1001030101_&amp;is_all=1"><span>Weibo</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">C# Windows程序相关</h1><ul class="meta"><li><i class="icon icon-author"></i>Gzh</li><li><i class="icon icon-clock"></i>1 Minutes</li><li><i class="icon icon-calendar"></i>2018年3月18日</li></ul></div></div><div class="article-content" style="max-width:900px"><p>.NET Framework 的核心是其运行库的执行环境，称为公共语言运行库(CLR)或.NET 运行库。通常将在 CLR 的控制下运行的代码称为托管代码(managed code)。但是，在 CLR 执行编写好的源代码之前，需要编译它们(在 C#中或其他语言中)。在.NET 中，编译分为两个阶段：</p>
+<ul>
+<li>把源代码编译为 Microsoft 中间语言(IL)。</li>
+<li>CLR 把 IL 编译为平台专用的代码。</li>
+</ul>
+<p>IL 总是即时编译的(称为 JIT 编译)，而 Java 字节代码常常是解释性的</p>
+<p>C#代码在执行前要编译为中间语言</p>
+<p>OBJ是中间代码文件、LIB是静态库文件、DLL是动态库文件、EXE是可执行文件。</p>
+<p>对于静态库文件，链接的时候把其中需要的东西抽取出来嵌入到EXE中，EXE较大。</p>
+<p>对于动态库文件，EXE执行的时候依赖于DLL提供的功能，没有DLL则EXE无法执行，EXE较小。</p>
+<p>一个C或CPP文件被编译后既是一个OBJ，当所有必须要的C或CPP都被编译成OBJ后再统一链接成EXE。</p>
+<p>LIB或DLL可以被看成是一堆OBJ的组合，发布后可以被链接入其它EXE或被其它EXE调用。</p>
+<p>LIB不可以调用其它LIB或DLL，DLL可以调用其它LIB或DLL。</p>
+<p>动态库有LIB文件和DLL文件。LIB文件必须在编译期就被链接到应用程序中，而DLL在运行期才会被调用。如果有DLL文件，则对应的LIB文件一般是一些索引信息，具体的实现在DLL文件中。如果只有LIB文件，那么这个LIB文件是静态库文件，索引和实现都在其中。静态库文件有好处，给用户安装时就不需要再挂动态库了；但也有缺点，即导致EXE较大且失去了动态库的灵活性，在版本升级时，同时要发布新的EXE才行。在动态库的情况下，有两个文件，一个是LIB文件、一个是DLL文件，LIB文件包含被DLL导出的函数的名称和位置，DLL包含实际的函数和数据，应用程序使用LIB文件链接到所需要使用的DLL文件，库中的函数和数据并不复制到可执行文件中，因此在EXE文件中存放的不是被调用的函数代码，而是DLL中所要调用的函数的内存地址，这样当一个或多个应用程序运行时再把程序代码和被调用的函数代码链接起来，从而节省了内存资源。</p>
+</div><div class="article-meta" style="max-width:900px"></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2018/03/19/Razor/"><i class="icon icon-arror-left"></i></a></li><li><a href="/2018/03/17/asp.net MVC/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/forestGzh" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/u/3832054570?refer_flag=1001030101_&amp;is_all=1" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2018 Gzh Blog<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>
