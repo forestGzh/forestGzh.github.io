@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="my blog"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>在Cent OS 7上部署ASP.Net Core 2.0 Web应用程序 - Gzh Blog</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a href="https://github.com/forestGzh"><span>Github</span></a></li><li><a href="https://weibo.com/u/3832054570?refer_flag=1001030101_&amp;is_all=1"><span>Weibo</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">在Cent OS 7上部署ASP.Net Core 2.0 Web应用程序</h1><ul class="meta"><li><i class="icon icon-author"></i>Gzh</li><li><i class="icon icon-clock"></i>8 Minutes</li><li><i class="icon icon-calendar"></i>2018年5月12日</li></ul></div></div><div class="article-content" style="max-width:900px"><h1 id="在Cent-OS-7上部署ASP-Net-Core-2-0-Web应用程序"><a href="#在Cent-OS-7上部署ASP-Net-Core-2-0-Web应用程序" class="headerlink" title="在Cent OS 7上部署ASP.Net Core 2.0 Web应用程序"></a>在Cent OS 7上部署ASP.Net Core 2.0 Web应用程序</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">说明：</span><br><span class="line">	在Windows平台上用Visual Studio 2017编写ASP.NET Core 2.0的Web MVC项目，并用VS 2017发布项目。</span><br><span class="line">	在虚拟机上安装Cent OS 7系统，将Web项目部署在Cent OS 7上。</span><br><span class="line">    使用Nginx(服务器和反向代理服务器)。</span><br><span class="line">    使用Supervisor进行进程管理。</span><br></pre></td></tr></table></figure>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><pre><code>* 部署环境
+* 发布ASP.NET Core 2.0程序
+* 安装Cent OS 7
+* 安装.NET Core SDK
+* 在Cent OS 7上部署程序
+* 配置Nginx
+* 配置进程守护（Supervisor）
+</code></pre><h4 id="部署环境"><a href="#部署环境" class="headerlink" title="部署环境"></a>部署环境</h4><pre><code>系统：Cent OS 7
+相关软件和工具：.NET Core SDK、Nginx、Supervisor、policycoreutils-python
+</code></pre><h4 id="发布ASP-NET-Core-2-0程序"><a href="#发布ASP-NET-Core-2-0程序" class="headerlink" title="发布ASP.NET Core 2.0程序"></a>发布ASP.NET Core 2.0程序</h4><pre><code>发布方式有两种，一种是使用Visual Studio 2017上的发布，另一种是在控制台使用命令方式在项目文件夹下发布，即dotnet publish（发布）命令
+</code></pre><h4 id="安装Cent-OS-7"><a href="#安装Cent-OS-7" class="headerlink" title="安装Cent OS 7"></a>安装Cent OS 7</h4><pre><code>安装方式很多，比如：https://blog.csdn.net/hui_2016/article/details/68927487
+</code></pre><h4 id="安装-NET-Core-SDK"><a href="#安装-NET-Core-SDK" class="headerlink" title="安装.NET Core SDK"></a>安装.NET Core SDK</h4><pre><code>这里丢出一个官方链接：https://www.microsoft.com/net/learn/get-started/linux/centos
+要是不想看链接，看下面：
+照着做：
+</code></pre>   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo rpm -Uvh https://packages.microsoft.com/config/rhel/7/packages-microsoft-prod.rpm</span><br><span class="line">   </span><br><span class="line">   sudo yum update</span><br><span class="line">sudo yum install libunwind libicu</span><br><span class="line">sudo yum install dotnet-sdk-2.1.200 //最好选最新版本</span><br></pre></td></tr></table></figure>
+<pre><code>做完后可以输入dotnet --info看一下是否安装成功。
+</code></pre><h4 id="在Cent-OS-7上部署程序"><a href="#在Cent-OS-7上部署程序" class="headerlink" title="在Cent OS 7上部署程序"></a>在Cent OS 7上部署程序</h4><pre><code>弄完之后就是准备在Cent OS 7上部署Webc程序了。
+先将发布后的文件夹放到Cent OS　7下，检查一下能否运行，使用dotnet命令。
+如果成功了，就继续。此时，无法访问这个Web程序的页面，需要部署一个Web容器进行转发，就是Nginx。
+</code></pre><h4 id="配置Nginx"><a href="#配置Nginx" class="headerlink" title="配置Nginx"></a>配置Nginx</h4><pre><code>先下载安装Nginx。
+
+curl -o  nginx.rpm http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+rpm -ivh nginx.rpm
+yum install nginx
+
+systemctl start nginx（启动Nginx）
+systemctl enable nginx （设置nginx的开机启动）
+
+如果需要，可以配置防火墙。
+命令：firewall-cmd --zone=public --add-port=80/tcp –permanent（开放80端口）
+命令：systemctl restart firewalld（重启防火墙以使配置即时生效）
+
+输入ip地址测试Nginx是否可以访问。
+
+配置Nginx对ASP.NET Core应用的转发：
+    修改 /etc/nginx/conf.d/default.conf 文件。（如果对文件没有修改权限，就用chmod命令修改文件权限）
+    根据需要修改文件内容：
+</code></pre>   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">   	listen 80;</span><br><span class="line">   	location / &#123;</span><br><span class="line">       	proxy_pass http://localhost:5000;</span><br><span class="line">       	proxy_http_version 1.1;</span><br><span class="line">       	proxy_set_header Upgrade $http_upgrade;</span><br><span class="line">       	proxy_set_header Connection keep-alive;</span><br><span class="line">       	proxy_set_header Host $host;</span><br><span class="line">       	proxy_cache_bypass $http_upgrade;</span><br><span class="line">   	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code>执行nginx –s reload 命令使配置生效。
+
+使用dotnet命令启动Web程序。
+在浏览器输入ip地址访问，如果访问成功就表示已经在Cent OS 7上部署成功。
+如果访问显示“502 Bad Gateway”,可能是由于SELinux保护机制所导致，
+需要将nginx添加至SELinux的白名单。命令如下：
+    yum install policycoreutils-python
+
+    sudo cat /var/log/audit/audit.log | grep nginx | grep denied | audit2allow -M mynginx
+
+    sudo semodule -i mynginx.pp
+
+    成功，部署完成。
+</code></pre><h4 id="配置进程守护（Supervisor）"><a href="#配置进程守护（Supervisor）" class="headerlink" title="配置进程守护（Supervisor）"></a>配置进程守护（Supervisor）</h4><pre><code>在Cent OS 7上，如果关闭终端，开启的进程就会关闭，导致程序无法访问。
+为了解决这个问题，就用到了Supervisor这个工具，Supervisor使用Python开发的，用于监听ASP.NET Core 应用程序的状况。在应用程序停止运行的时候立即重新启动。
+
+Supervisor（http://supervisord.org/）是用Python开发的一个client/server服务，是Linux/Unix系统下的一个进程管理工具，不支持Windows系统。它可以很方便的监听、启动、停止、重启一个或多个进程。用Supervisor管理的进程，当一个进程意外被杀死，supervisort监听到进程死后，会自动将它重新拉起，很方便的做到进程自动恢复的功能，不再需要自己写shell脚本来控制。
+
+安装Supervisor(...我在安装的时候碰到一些问题，弄了很久才成功安装。)
+    这里丢出两个链接：https://blog.csdn.net/bbg221/article/details/78715734
+     https://blog.csdn.net/fenglailea/article/details/77146248
+
+    1、安装Python包管理工具（easy_install）
+        easy_install是setuptools包里带的一个命令，使用easy_install实际上是在调用setuptools来完成安装模块的工作,所以安装setuptools即可。
+        wget --no-check-certificate https://bootstrap.pypa.io/ez_setup.py -O - | sudo python  或  yum install python-setuptools
+
+    2、安装supervisor
+        easy_install supervisor  或  yum install supervisor
+
+    3、配置Supervisor
+        mkdir /etc/supervisor     
+        echo_supervisord_conf &gt; /etc/supervisor/supervisord.conf   （注意文件权限，没有读写权限必出错）
+        修改supervisord.conf文件，一般修改最后两行就行。去掉两行前面的分号，把files后改成conf.d/*.conf
+        如果服务已经启动，修改配置文件可用“supervisorctl reload”命令来使其生效。
+
+    4、配置对ASP.NET Core应用的守护
+    创建一个 WebApplication1.conf文件，内容大概如下：（根据需要修改）
+</code></pre>   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[program:WebApplication1]</span><br><span class="line">command=dotnet WebApplication1.dll ; 运行程序的命令</span><br><span class="line">directory=/home/wwwroot/WebApplication1/ ; 命令执行的目录</span><br><span class="line">autorestart=true ; 程序意外退出是否自动重启</span><br><span class="line">stderr_logfile=/var/log/WebApplication1.err.log ; 错误日志文件（如果文件不存在就创建一个）</span><br><span class="line">stdout_logfile=/var/log/WebApplication1.out.log ; 输出日志文件</span><br><span class="line">environment=ASPNETCORE_ENVIRONMENT=Production ; 进程环境变量</span><br><span class="line">user=root ; 进程执行的用户身份</span><br><span class="line">stopsignal=INT</span><br></pre></td></tr></table></figure>
+<pre><code>   然后，将文件拷贝到：“/etc/supervisor/conf.d/WebApplication1.conf”下        
+运行supervisord,查看是否生效。命令如下：
+supervisord -c /etc/supervisor/supervisord.conf
+ps -ef | grep WebApplication1
+如果存在dotnet WebApplication1.dll 进程则代表运行成功，这时候在使用浏览器进行访问。
+
+如果访问成功，关于ASP.NET Core应用程序的守护就配置完成了。
+
+再将Supervisor设为开机自启动，就完了。
+</code></pre></div><div class="article-meta" style="max-width:900px"></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2018/03/27/MVC DataAnnotations/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/forestGzh" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/u/3832054570?refer_flag=1001030101_&amp;is_all=1" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2018 Gzh Blog<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>
